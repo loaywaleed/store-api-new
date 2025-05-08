@@ -36,7 +36,10 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "userapp.User"
-AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBackend"]
+AUTHENTICATION_BACKENDS = [
+    "storeproject.core.authentication.CustomEmailorPhoneAuthentication",
+    "django.contrib.auth.backends.ModelBackend",
+]
 # Application definition
 
 
@@ -60,6 +63,7 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "dj_rest_auth.registration",
     "rest_framework_simplejwt.token_blacklist",
+    # "dj_rest_auth.jwt_auth",
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
@@ -69,8 +73,10 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.facebook",
     "dj_rest_auth",
 ]
+
 # local apps
 LOCAL_APPS = [
+    "storeproject.core",
     "storeproject.userapp",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -90,6 +96,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
+REST_AUTH = {"USE_JWT": True}
 ROOT_URLCONF = "storeproject.urls"
 
 
@@ -203,7 +210,7 @@ CORS_ALLOW_HEADERS = (*default_headers, "company")
 """ REST FRAMEWORK """
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "storeproject.services.authentication.JWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     # "DEFAULT_PAGINATION_CLASS": "storeproj.services.paginator.CustomPagination",
     # "PAGE_SIZE": 5,
@@ -217,66 +224,20 @@ REST_FRAMEWORK = {
 """ JWT Settings"""
 
 SIMPLE_JWT = {
-    "TOKEN_BLACKLIST_ENABLE": True,
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(config("ACCESS_TOKEN_LIFETIME", 5))),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
-    "AUTH_HEADER_TYPES": ("Token",),
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "user_id",
     "UPDATE_LAST_LOGIN": True,
 }
 
-# """Import Export"""
-# IMPORT_EXPORT_USE_TRANSACTIONS = True
-
-
 """ All Auth Settings"""
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
 SOCIALACCOUNT_PROVIDERS = {}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
+
 """ Rest Auth settings """
-REST_USE_JWT = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
-# MAP_WIDGETS = {
-#     "GooglePointFieldWidget": (
-#         ("zoom", 15),
-#         ("mapCenterLocationName", "egypt"),
-#     ),
-#     "GOOGLE_MAP_API_KEY": config("GOOGLE_MAPS_TOKEN", cast=str),
-# }
-
-
-# firebase_key_json = json.loads(config("FIREBASE_KEY_JSON"))
-
-# Firebase settings
-# PUSH_NOTIFICATION_DEVICE_TYPES = [FIREBASE_NOTIFICATION]
-# FIREBASE_PROFILES = {
-#     "default": {
-#         "PUSH_NOTIFICATION_FIREBASE_KEY": json.dumps(firebase_key_json),
-#     },
-# }
-
-
-# AFTER_PAYMENT_SUCCESS = after_payment_success
-# AFTER_PAYMENT_FAIL = after_payment_fail
-# # Django RQ settings
-# RQ_QUEUES = {
-#     "default": {
-#         "HOST": config("REDIS_HOST", cast=str),
-#         "PORT": config("REDIS_PORT", cast=str),
-#         "DB": 0,
-#         "DEFAULT_TIMEOUT": 360,
-#     },
-#     "sms": {
-#         "HOST": config("REDIS_HOST", cast=str),
-#         "PORT": config("REDIS_PORT", cast=str),
-#         "DB": 0,
-#         "DEFAULT_TIMEOUT": 360,
-#     },
-# }
 
 UNFOLD = {
     "SITE_TITLE": "Bogo Admin",
