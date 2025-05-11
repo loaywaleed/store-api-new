@@ -1,13 +1,15 @@
+from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import LoginSerializer
-from rest_framework import serializers
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
-# User = get_user_model()
+User = get_user_model()
 
 
 class CustomLoginSerializer(LoginSerializer):
+
     username = None
     email = None
     identifier = serializers.CharField(required=True, label=_("Email or Phone"))
@@ -29,5 +31,60 @@ class CustomLoginSerializer(LoginSerializer):
         )
         if not user:
             raise ValidationError("Invalid credentials")
+        if not user.is_active:
+            raise ValidationError("User account is inactive")
         attrs["user"] = user
+        return attrs
+
+
+class CustomRegisterSerializer(RegisterSerializer):
+    email = serializers.EmailField(required=True)
+    phone = serializers.CharField(required=True, max_length=14)
+
+    def validate(self, attrs):
+        phone = attrs.get("phone")
+        if User.objects.filter(phone=phone).exists():
+            raise ValidationError(_("Phone number already exists"))
+        return super().validate(attrs)
+
+    def get_cleaned_data(self):
+        data = super().get_cleaned_data()
+        data.update(
+            {
+                "phone": self.validated_data.get("phone", ""),
+            }
+        )
+        return data
+
+
+class VerifyPhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField(required=True, max_length=14)
+    otp = serializers.CharField(required=True, max_length=6)
+
+    def validate(self, attrs):
+        phone = attrs.get("phone")
+        otp = attrs.get("otp")
+
+        user = User.objects.get_user_by_email_or_phone(phone)
+        if not user:
+            raise ValidationError(_("User with this phone number does not exist"))
+        if not user.verify_phone(otp):
+            raise ValidationError(_("Invalid OTP"))
+        attrs["user"] = user
+        return attrs
+
+
+class VerifyEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    otp = serializers.CharField(required=True, max_length=6)
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        otp = attrs.get("otp")
+
+        user = User.objects.get_user_by_email_or_phone(email)
+        if not user:
+            raise ValidationError(_("User with this email does not exist"))
+        if not user.verify_email(otp):
+            raise ValidationError(_("Invalid OTP"))
         return attrs

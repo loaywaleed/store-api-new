@@ -1,7 +1,8 @@
-from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
 
 UserModel = get_user_model()
+
 
 class CustomEmailorPhoneAuthentication(ModelBackend):
 
@@ -12,7 +13,7 @@ class CustomEmailorPhoneAuthentication(ModelBackend):
         user = None
         if username:
             user = UserModel.objects.get_user_by_email_or_phone(username)
+
         if user and user.check_password(password):
             return user
         return None
-        

@@ -96,7 +96,16 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-REST_AUTH = {"USE_JWT": True}
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": None,
+    "JWT_AUTH_REFRESH_COOKIE": None,
+    # These will disable redirects:
+    "LOGIN_REDIRECT_URL": None,
+    "LOGOUT_REDIRECT_URL": None,
+    "LOGIN_SERIALIZER": "storeproject.userapp.serializers.CustomLoginSerializer",
+    # "REGISTER_SERIALIZER": "storeproject.userapp.serializers.CustomRegisterSerializer",
+}
 ROOT_URLCONF = "storeproject.urls"
 
 
@@ -233,6 +242,8 @@ SIMPLE_JWT = {
 SOCIALACCOUNT_PROVIDERS = {}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = None
 
 """ Rest Auth settings """
 ACCOUNT_AUTHENTICATION_METHOD = "email"

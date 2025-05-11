@@ -5,15 +5,14 @@ from django.db import models
 class UserManager(BaseUserManager):
 
     def create_user(self, email, phone, password=None, **extra_fields):
-        if not email and not phone:
-            raise ValueError("Users need to provide an email or phone")
-        if email:
-            email = self.normalize_email(email)
-        else:
-            email = None
-        user = self.model(email=email, phone=phone, **extra_fields)
+        if not email or not phone:
+            raise ValueError("Email/phone required")
+
+        user = self.model(
+            email=self.normalize_email(email), phone=phone, **extra_fields
+        )
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, email, phone, password=None, **extra_fields):
