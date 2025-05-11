@@ -10,6 +10,8 @@ from storeproject.core.jwt_util import Jwt
 from .serializers import (
     CustomLoginSerializer,
     CustomRegisterSerializer,
+    ResendEmailOtpSerializer,
+    ResendPhoneOtpSerializer,
     VerifyEmailSerializer,
     VerifyPhoneSerializer,
 )
@@ -32,19 +34,17 @@ class RegistrationViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        password = serializer.validated_data.pop("password1")
-        serializer.validated_data.pop("password2")
-
         try:
-            user = User.objects.create_user(
-                password=password, **serializer.validated_data
-            )
-        except IntegrityError as e:
+            data = serializer.validated_data.copy()
+            password = data.pop("password1")
+            data.pop("password2")
+            user = User.objects.create_user(password=password, **data)
+            user.send_phone_otp()
+        except (IntegrityError, ValueError) as e:
             return Response(
-                {"detail": "A user with this email or phone already exists."},
+                {"detail": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        user.send_phone_otp()
         return Response(
             {"detail": "User created. OTP sent to phone.", "phone": user.phone},
             status=status.HTTP_201_CREATED,
@@ -58,13 +58,37 @@ class RegistrationViewSet(viewsets.GenericViewSet):
         user.send_email_otp()
         return Response(
             {"detail": "Phone verified successfully. OTP send to your email."},
-            status=status.HTTP_200_OK,
         )
 
     @action(detail=False, methods=["post"])
     def verify_email(self, request):
         serializer = VerifyEmailSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data.get("user")
         return Response(
-            {"detail": "Email verified successfully. you can now log in now."},
+            {
+                "detail": "Email verified successfully. You can now log in.",
+                "email": user.email,
+                "is_active": user.is_active,
+            }
+        )
+
+    @action(detail=False, methods=["post"])
+    def resend_phone_otp(self, request):
+        serializer = ResendPhoneOtpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        user.send_phone_otp()
+        return Response(
+            {"detail": "OTP sent to your phone."},
+        )
+
+    @action(detail=False, methods=["post"])
+    def resend_email_otp(self, request):
+        serializer = ResendEmailOtpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        user.send_email_otp()
+        return Response(
+            {"detail": "OTP sent to your email."},
         )
