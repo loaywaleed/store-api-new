@@ -6,6 +6,9 @@ from django.utils import timezone
 
 
 class OTPMixin:
+    """
+    Mixin to handle otp management for user verification.
+    """
 
     def generate_phone_otp(self):
         self.otp = str(random.randint(100000, 999999))

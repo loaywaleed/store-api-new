@@ -9,6 +9,10 @@ User = get_user_model()
 
 
 class CustomLoginSerializer(LoginSerializer):
+    """
+    Custom login serializer which overrides the default login serializer (dj_rest_auth).
+    allows users to log in using either their email or phone number.
+    """
 
     username = None
     email = None
@@ -38,6 +42,11 @@ class CustomLoginSerializer(LoginSerializer):
 
 
 class CustomRegisterSerializer(RegisterSerializer):
+    """
+    Custom registration serializer which overrides the default registration serializer (dj_rest_auth).
+    allows users to register using either their email and phone number.
+    """
+
     email = serializers.EmailField(required=True)
     phone = serializers.CharField(required=True, max_length=14)
 
@@ -58,6 +67,10 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 
 class VerifyPhoneSerializer(serializers.Serializer):
+    """
+    Serializer for verifying phone number.
+    """
+
     phone = serializers.CharField(required=True, max_length=14)
     otp = serializers.CharField(required=True, max_length=6)
 
@@ -75,6 +88,10 @@ class VerifyPhoneSerializer(serializers.Serializer):
 
 
 class VerifyEmailSerializer(serializers.Serializer):
+    """
+    Serializer for verifying email address.
+    """
+
     email = serializers.EmailField(required=True)
     otp = serializers.CharField(required=True, max_length=6)
 

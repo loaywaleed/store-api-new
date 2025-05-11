@@ -3,11 +3,13 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
+    """
+    User manager for the custom user model.
+    """
 
     def create_user(self, email, phone, password=None, **extra_fields):
         if not email or not phone:
             raise ValueError("Email/phone required")
-
         user = self.model(
             email=self.normalize_email(email), phone=phone, **extra_fields
         )
