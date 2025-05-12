@@ -4,7 +4,7 @@
 register -> verify phone -> verify email -> can login
 
 ## Todo
-- add throttling to otp limits perhaps
+- ~~add throttling to otp limits perhaps~~
 - integrate actual sms and email smtp
 - consider the workflow
 - add drf-spectacular

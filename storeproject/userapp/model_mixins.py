@@ -75,3 +75,9 @@ class OTPMixin:
         )
         print(f"Sending email OTP: {otp} to {self.email}")
         return otp
+
+    @transaction.atomic
+    def reset_otp(self):
+        self.otp = None
+        self.otp_expiration = None
+        self.save()
