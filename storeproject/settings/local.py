@@ -51,6 +51,13 @@ STATIC_DIRECTORY = "/static/"
 MEDIA_DIRECTORY = "/media/"
 MEDIA_ROOT = f"{BASE_DIR}/media/"  # noqa
 
+# Allow API docs in development
+SPECTACULAR_SETTINGS["SERVE_INCLUDE_SCHEMA"] = True
+
+# Add spectacular apps only in development
+INSTALLED_APPS += [
+    "drf_spectacular",
+]
 
 # Your stuff...
 # ------------------------------------------------------------------------------

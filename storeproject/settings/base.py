@@ -221,13 +221,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    # "DEFAULT_PAGINATION_CLASS": "storeproj.services.paginator.CustomPagination",
-    # "PAGE_SIZE": 5,
-    "DEFAULT_FILTER_BACKENDS": (
-        "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "rest_framework.filters.OrderingFilter",
-    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 """ JWT Settings"""
@@ -258,32 +252,39 @@ UNFOLD = {
         "show_all_applications": True,
     },
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Store API",
+    "DESCRIPTION": "Store API with OTP authentication",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 # CRON_CLASSES = [
 #     "bogo_plus.brandapp.crons.BrandSorting",
 #     "bogo_plus.packageapp.crons.LeaderBoardPrizes",
 #     "bogo_plus.packageapp.crons.DeleteUnpaidUserPackages",
-#     "bogo_plus.packageapp.crons.ToggleCouponIsActive",
-#     "bogo_plus.packageapp.crons.DeactivateExpiredUserPackages",
-#     "bogo_plus.offerapp.crons.DeleteUnclaimedRequests",
-# ]
-# TESTING = False
-# RQ_SHOW_ADMIN_LINK = True
-
-# DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000000
-# CKEDITOR_UPLOAD_PATH = "uploads/"
-# CKEDITOR_CONFIGS = {
+# DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000000uponIsActive",
+# CKEDITOR_UPLOAD_PATH = "uploads/"eactivateExpiredUserPackages",
+# CKEDITOR_CONFIGS = {app.crons.DeleteUnclaimedRequests",
 #     "default": {
 #         "toolbar": [
-#             {
+#             {_LINK = True
 #                 "name": "basicstyles",
 #                 "items": ["Bold", "Italic", "Underline", "Strike", "RemoveFormat"],
-#             },
-#             {
+#             },D_PATH = "uploads/"
+#             {IGS = {
 #                 "name": "paragraph",
 #                 "items": ["NumberedList", "BulletedList", "-", "Outdent", "Indent"],
 #             },
 #             {"name": "links", "items": ["Link", "Unlink"]},
-#             {"name": "insert", "items": ["Image", "Table"]},
+#             {"name": "insert", "items": ["Image", "Table"]},rike", "RemoveFormat"],
+#             {"name": "styles", "items": ["Format"]},
+#             {"name": "tools", "items": ["Maximize"]},
+#         ],      "name": "paragraph",
+#         "height": 300,": ["NumberedList", "BulletedList", "-", "Outdent", "Indent"],
+#         "width": "auto",
+#     },      {"name": "links", "items": ["Link", "Unlink"]},
+# }           {"name": "insert", "items": ["Image", "Table"]},
 #             {"name": "styles", "items": ["Format"]},
 #             {"name": "tools", "items": ["Maximize"]},
 #         ],

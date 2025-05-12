@@ -29,9 +29,6 @@ class User(AbstractUser, OTPMixin):
         blank=False,
         null=False,
         validators=[PHONE_REGEX],
-        help_text=_(
-            "Egyptian phone number in format: '01012345678' or '+201012345678'"
-        ),
     )
     is_active = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
