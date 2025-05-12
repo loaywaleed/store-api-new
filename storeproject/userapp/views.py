@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 
 from storeproject.core.jwt_util import Jwt
-from core.throttling import (
+from storeproject.core.throttling import (
     OTPMinuteThrottle,
     OTPDayThrottle,
     PhoneVerificationMinuteThrottle,
