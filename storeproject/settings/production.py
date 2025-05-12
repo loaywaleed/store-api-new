@@ -57,23 +57,23 @@ DATABASES["default"]["CONN_MAX_AGE"] = config(  # noqa
 # )
 
 # AWS related stuff
-AWS_HEADERS = {  # see http://developer.yahoo.com/performance/rules.html#expires
-    "Expires": "Thu, 31 Dec 2099 20:00:00 GMT",
-    "Cache-Control": "max-age=94608000",
-}
+# AWS_HEADERS = {  # see http://developer.yahoo.com/performance/rules.html#expires
+#     "Expires": "Thu, 31 Dec 2099 20:00:00 GMT",
+#     "Cache-Control": "max-age=94608000",
+# }
 
-DEFAULT_FILE_STORAGE = "bogo_plus.s3utils.MediaS3BotoStorage"
-STATICFILES_STORAGE = "bogo_plus.s3utils.StaticS3BotoStorage"
+# DEFAULT_FILE_STORAGE = "bogo_plus.s3utils.MediaS3BotoStorage"
+# STATICFILES_STORAGE = "bogo_plus.s3utils.StaticS3BotoStorage"
 
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", cast=str)
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", cast=str)
-AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default=False, cast=str)
-AWS_S3_HOST = "s3.%s.amazonaws.com" % config(
-    "AWS_STORAGE_BUCKET_REGION", default=False, cast=str
-)
-S3_URL = "http://%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
-STATIC_DIRECTORY = "/bogo_plus/static/"
-MEDIA_DIRECTORY = "/bogo_plus/media/"
+# AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", cast=str)
+# AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", cast=str)
+# AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default=False, cast=str)
+# AWS_S3_HOST = "s3.%s.amazonaws.com" % config(
+#     "AWS_STORAGE_BUCKET_REGION", default=False, cast=str
+# )
+# S3_URL = "http://%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+# STATIC_DIRECTORY = "/bogo_plus/static/"
+# MEDIA_DIRECTORY = "/bogo_plus/media/"
 
 # Email
 EMAIL_BACKEND = config("EMAIL_BACKEND")
@@ -83,5 +83,22 @@ EMAIL_PORT = config("EMAIL_PORT")
 SERVER_EMAIL = config("SERVER_EMAIL")
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+
+
+REST_FRAMEWORK.update(
+    {
+        "DEFAULT_THROTTLE_CLASSES": [],
+        "DEFAULT_THROTTLE_RATES": {
+            # for short durations
+            "otp_minute": "3/minute",
+            "phone_verification_minute": "3/minute",
+            "email_verification_minute": "3/minute",
+            # for spaced out durations
+            "otp_day": "10/day",
+            "phone_verification_day": "20/day",
+            "email_verification_day": "20/day",
+        },
+    }
+)
 
 # ------------------------------------------------------------------------------

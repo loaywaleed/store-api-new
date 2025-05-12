@@ -6,6 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from storeproject.core.jwt_util import Jwt
+from core.throttling import (
+    OTPMinuteThrottle,
+    OTPDayThrottle,
+    PhoneVerificationMinuteThrottle,
+    PhoneVerificationDayThrottle,
+    EmailVerificationDayThrottle,
+    EmailVerificationMinuteThrottle,
+)
 
 from .serializers import (
     CustomLoginSerializer,
@@ -29,6 +37,10 @@ class CustomLoginView(LoginView):
 
 class RegistrationViewSet(viewsets.GenericViewSet):
     serializer_class = CustomRegisterSerializer
+    throttle_classes = [
+        OTPMinuteThrottle,
+        OTPDayThrottle,
+    ]
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -50,7 +62,14 @@ class RegistrationViewSet(viewsets.GenericViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @action(detail=False, methods=["post"])
+    @action(
+        detail=False,
+        methods=["post"],
+        throttle_classes=[
+            PhoneVerificationDayThrottle,
+            PhoneVerificationMinuteThrottle,
+        ],
+    )
     def verify_phone(self, request):
         serializer = VerifyPhoneSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -60,11 +79,18 @@ class RegistrationViewSet(viewsets.GenericViewSet):
             {"detail": "Phone verified successfully. OTP send to your email."},
         )
 
-    @action(detail=False, methods=["post"])
+    @action(
+        detail=False,
+        methods=["post"],
+        throttle_classes=[
+            EmailVerificationDayThrottle,
+            EmailVerificationMinuteThrottle,
+        ],
+    )
     def verify_email(self, request):
         serializer = VerifyEmailSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data.get("user")
+        user = serializer.validated_data["user"]
         return Response(
             {
                 "detail": "Email verified successfully. You can now log in.",
@@ -73,7 +99,11 @@ class RegistrationViewSet(viewsets.GenericViewSet):
             }
         )
 
-    @action(detail=False, methods=["post"])
+    @action(
+        detail=False,
+        methods=["post"],
+        throttle_classes=[OTPMinuteThrottle, OTPDayThrottle],
+    )
     def resend_phone_otp(self, request):
         serializer = ResendPhoneOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -83,7 +113,11 @@ class RegistrationViewSet(viewsets.GenericViewSet):
             {"detail": "OTP sent to your phone."},
         )
 
-    @action(detail=False, methods=["post"])
+    @action(
+        detail=False,
+        methods=["post"],
+        throttle_classes=[OTPDayThrottle, OTPMinuteThrottle],
+    )
     def resend_email_otp(self, request):
         serializer = ResendEmailOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
