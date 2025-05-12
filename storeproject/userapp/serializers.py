@@ -141,3 +141,19 @@ class ResendEmailOtpSerializer(serializers.Serializer):
         if user.is_email_verified:
             raise ValidationError(_("Email already verified"))
         return attrs
+
+    class InvalidateOtpSerializer(serializers.Serializer):
+        """
+        Serializer for invalidating OTP.
+        identifier: phone or email
+        """
+
+        identifier = serializers.CharField(required=True, max_length=14)
+        email = serializers.EmailField(required=True)
+
+        def validate(self, attrs):
+            identifier = attrs.get("phone")
+            user = User.objects.get_user_by_email_or_phone(identifier)
+            if not user:
+                raise ValidationError(_("User with this identifier does not exist"))
+            return attrs

@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 
 from storeproject.core.jwt_util import Jwt
 from core.throttling import (
@@ -125,4 +126,22 @@ class RegistrationViewSet(viewsets.GenericViewSet):
         user.send_email_otp()
         return Response(
             {"detail": "OTP sent to your email."},
+        )
+
+    @action(
+        detail=False,
+        methods=["post"],
+        permission_classes=[IsAdminUser],
+    )
+    def invalidate_otp(self, request):
+        """
+        Invalidate the OTP for a user.
+        """
+        serializer = VerifyPhoneSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        user.reset_otp()
+        return Response(
+            {"detail": "OTP invalidated successfully."},
+            status=status.HTTP_200_OK,
         )
