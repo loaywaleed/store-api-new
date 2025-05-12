@@ -49,9 +49,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     """
 
     email = serializers.EmailField(required=True, validators=[EMAIL_REGEX])
-    phone = serializers.CharField(
-        required=True, max_length=13, validators=[PHONE_REGEX]
-    )
+    phone = serializers.CharField(required=True, validators=[PHONE_REGEX])
 
     def validate(self, attrs):
         phone = attrs.get("phone")
@@ -75,7 +73,8 @@ class VerifyPhoneSerializer(serializers.Serializer):
     """
 
     phone = serializers.CharField(
-        required=True, max_length=13, validators=[PHONE_REGEX]
+        required=True,
+        max_length=13,
     )
     otp = serializers.CharField(required=True, max_length=6)
 
