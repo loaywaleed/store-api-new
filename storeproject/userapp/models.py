@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from storeproject.core.validators import EMAIL_REGEX, PHONE_REGEX
+
 from .managers import UserManager
 from .model_mixins import OTPMixin
 
