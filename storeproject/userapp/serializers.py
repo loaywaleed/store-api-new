@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
+from storeproject.core.validators import PHONE_REGEX, EMAIL_REGEX
 
 User = get_user_model()
 
@@ -47,8 +48,10 @@ class CustomRegisterSerializer(RegisterSerializer):
     allows users to register using either their email and phone number.
     """
 
-    email = serializers.EmailField(required=True)
-    phone = serializers.CharField(required=True, max_length=14)
+    email = serializers.EmailField(required=True, validators=[EMAIL_REGEX])
+    phone = serializers.CharField(
+        required=True, max_length=13, validators=[PHONE_REGEX]
+    )
 
     def validate(self, attrs):
         phone = attrs.get("phone")
@@ -71,7 +74,9 @@ class VerifyPhoneSerializer(serializers.Serializer):
     Serializer for verifying phone number.
     """
 
-    phone = serializers.CharField(required=True, max_length=14)
+    phone = serializers.CharField(
+        required=True, max_length=13, validators=[PHONE_REGEX]
+    )
     otp = serializers.CharField(required=True, max_length=6)
 
     def validate(self, attrs):
